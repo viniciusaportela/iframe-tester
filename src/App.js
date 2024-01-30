@@ -1,27 +1,59 @@
-import logo from './logo.svg';
 import './App.css';
-import {useEffect} from "react";
+import {useEffect, useRef, useState} from "react";
 
 function App() {
-    useEffect(() => {
-        const iframe = document.getElementById('iframe');
+    const [messages, setMessages] = useState([]);
+    const origin = useRef("");
 
+    useEffect(() => {
         window.onmessage = (event) => {
-            if (event.origin !== "http://localhost:8080") {
+            if (event.origin !== origin.current) {
                 return;
             }
 
             console.log(event);
+
+            setMessages((messages) => [event.data, ...messages]);
         }
     }, []);
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <iframe src="http://localhost:8080/tem-colaborador/deep-link?tokenZeus=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsSWQiOjUyMjMzNywiaGVsbG8iOnRydWUsImlhdCI6MTcwNjI3ODY3OCwiZXhwIjoxNzA3MTc4Njc4LCJqdGkiOiJlOTljNzc1Yy1mY2NmLTQzNTctYjI5MS1mYzFjMmY4Y2RmMTcifQ.UPhD6ZqBwT4TtBbQREeSUXYXcxy2Z4-EKNEJkvBFP2E&feature=consulta-presencial&showHeader=true&showFooter=true&programCode=3141&showSummary=false" width={500} height={500} id="iframe" allow="geolocation"></iframe>
-      </header>
-    </div>
-  );
+    const updateOrigin = () => {
+        const url = new URL(document.getElementById('iframe-url').value);
+        origin.current = `${url.protocol}//${url.hostname}${url.port ? `:${url.port}` : ''}`;
+    }
+
+    const loadIframe = () => {
+        document.getElementById('iframe').src = document.getElementById('iframe-url').value;
+    }
+
+    return (
+        <div style={{ backgroundColor: "#282c34", minHeight: "100vh", height: "100%" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24 }}>
+                <div style={{ display: "flex", flexDirection: "row", marginBottom: 24}}>
+                    <input id="iframe-url" onChange={(ev) => updateOrigin()}/>
+                    <button onClick={loadIframe}>Atualizar URL</button>
+                </div>
+
+                <iframe src="https://www.google.com" width={700} height={800} id="iframe" allow="geolocation" style={{ border: "none" }}></iframe>
+
+                <div style={{marginTop: 24, flexDirection: "column", display: "flex", gap: 12 }}>
+                    {messages.map((message, index) => (
+                        <div key={messages.length - index} style={{
+                            borderWidth: 2,
+                            borderColor: "#6271d9",
+                            backgroundColor: "#8c99ed",
+                            padding: 7,
+                            borderRadius: 12,
+                            animationName: "showUp",
+                            animationDuration: "1s",
+                        }}>
+                            {messages.length - index}: {message}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default App;
