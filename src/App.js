@@ -34,7 +34,7 @@ function App() {
                     <button onClick={loadIframe}>Atualizar URL</button>
                 </div>
 
-                <iframe src="https://www.google.com" width={700} height={800} id="iframe" allow="geolocation" style={{ border: "none" }}></iframe>
+                <iframe src="https://www.google.com" width={700} height={800} id="iframe" allow="geolocation; clipboard-read; clipboard-write" style={{ border: "none" }}></iframe>
 
                 <div style={{marginTop: 24, flexDirection: "column", display: "flex", gap: 12 }}>
                     {messages.map((message, index) => (
